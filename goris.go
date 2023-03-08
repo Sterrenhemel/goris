@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -16,18 +17,22 @@ const (
 )
 
 // dispres : Display results
-func dispres(r []string, c int) {
-	if len(r) < c {
-		c = len(r)
+func dispres(r []string, c int, outputFile string) {
+	results := []map[string]interface{}{}
+	for _, url := range r {
+		results = append(results, map[string]interface{}{
+			"url": url,
+		})
 	}
-	for i := 0; i < c; i++ {
-		fmt.Printf("%s\n", r[i])
-	}
+	results = results[:c]
+	jsonString, _ := json.Marshal(results)
+	os.WriteFile(outputFile, jsonString, os.ModePerm)
 }
 
 // handler : Handler of goris
 func handler(c *cli.Context) error {
 	n := c.Int("number")
+	outputFile := c.String("output")
 	// offset := c.Int("offset")
 	if n > 100 {
 		n = 100
@@ -55,7 +60,7 @@ func handler(c *cli.Context) error {
 			return err
 		}
 	}
-	dispres(results, n)
+	dispres(results, n, outputFile)
 	return nil
 }
 
@@ -94,6 +99,10 @@ func createHelp() *cli.App {
 					Name:  "offset, n",
 					Usage: "Number of retrieved image URLs. ( 1 - 100 )",
 					Value: 50,
+				},
+				&cli.StringFlag{
+					Name:  "output, o",
+					Usage: "output file",
 				},
 				&cli.BoolFlag{
 					Name:  "download, d",
