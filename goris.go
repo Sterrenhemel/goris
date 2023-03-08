@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"goris/ris"
+	"github.com/Sterrenhemel/goris/ris"
 
 	"github.com/urfave/cli"
 )
@@ -87,7 +87,7 @@ func createHelp() *cli.App {
 				&cli.IntFlag{
 					Name:  "number, n",
 					Usage: "Number of retrieved image URLs. ( 1 - 100 )",
-					Value: 10,
+					Value: 50,
 				},
 				&cli.BoolFlag{
 					Name:  "download, d",

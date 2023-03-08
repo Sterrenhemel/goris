@@ -1,4 +1,4 @@
-module goris
+module github.com/Sterrenhemel/goris
 
 go 1.18
 

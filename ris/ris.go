@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -128,35 +129,60 @@ func (r *requestParams) getURLs(res *http.Response, imWebPage bool) ([]string, e
 	return ar, nil
 }
 
+func downloadFile(filepath string, url string) (err error) {
+
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("User-Agent", "Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	// Get the data
+	defer resp.Body.Close()
+
+	// Check server response
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("bad status: %s", resp.Status)
+	}
+
+	// Writer the body to file
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func RandStringRunes(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
+}
+
 // ImgFromURL : Search images from an image URL
 func (im *Imgdata) ImgFromURL(searchimage string) ([]string, error) {
-	var err error
-	r := &requestParams{
-		Method: "GET",
-		URL:    baseurl + "/searchbyimage?image_url=" + searchimage,
-		Data:   nil,
-		Client: &http.Client{
-			Timeout:       time.Duration(10) * time.Second,
-			CheckRedirect: func(req *http.Request, via []*http.Request) error { return errors.New("Redirect") },
-		},
-	}
-	var res *http.Response
-	for {
-		res, err = r.fetchURL()
-		if err != nil {
-			return nil, err
-		}
-		if res.StatusCode == 200 {
-			break
-		}
-		reurl, _ := res.Location()
-		r.URL = reurl.String()
-	}
-	ar, err := r.getURLs(res, im.WebPage)
-	if err != nil {
-		return nil, err
-	}
-	return ar, nil
+	fileName := "/tmp/" + RandStringRunes(10)
+	fullName := fileName + "." + "jpg"
+	downloadFile(fullName, searchimage)
+	return im.ImgFromFile(fullName)
 }
 
 // ImgFromFile : Search images from an image file
