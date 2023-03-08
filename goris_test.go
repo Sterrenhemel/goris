@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"goris/ris"
+	"github.com/Sterrenhemel/goris/ris"
 )
 
 func TestImgFromURL(t *testing.T) {

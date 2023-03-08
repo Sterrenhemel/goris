@@ -28,6 +28,7 @@ func dispres(r []string, c int) {
 // handler : Handler of goris
 func handler(c *cli.Context) error {
 	n := c.Int("number")
+	// offset := c.Int("offset")
 	if n > 100 {
 		n = 100
 	}
@@ -86,6 +87,11 @@ func createHelp() *cli.App {
 				},
 				&cli.IntFlag{
 					Name:  "number, n",
+					Usage: "Number of retrieved image URLs. ( 1 - 100 )",
+					Value: 50,
+				},
+				&cli.IntFlag{
+					Name:  "offset, n",
 					Usage: "Number of retrieved image URLs. ( 1 - 100 )",
 					Value: 50,
 				},
