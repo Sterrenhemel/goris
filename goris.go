@@ -95,11 +95,11 @@ func createHelp() *cli.App {
 					Usage: "Number of retrieved image URLs. ( 1 - 100 )",
 					Value: 50,
 				},
-				&cli.IntFlag{
-					Name:  "offset, n",
-					Usage: "Number of retrieved image URLs. ( 1 - 100 )",
-					Value: 50,
-				},
+				// &cli.IntFlag{
+				// 	Name:  "offset, offset",
+				// 	Usage: "Number of retrieved image URLs. ( 1 - 100 )",
+				// 	Value: 0,
+				// },
 				&cli.StringFlag{
 					Name:  "output, o",
 					Usage: "output file",
